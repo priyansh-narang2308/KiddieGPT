@@ -40,9 +40,9 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^20.19.11",
     "@types/pg": "^8.15.4",
-    "@types/react": "^19",
+    "@types/react": "^19.1.10",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.1",
     "tailwindcss": "^4",
