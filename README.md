@@ -134,34 +134,6 @@ KiddieGPT/
 │  └─ UserDetailContext.tsx
 ├─ lib/
 │  └─ utils.ts
-├─ public/
-│  ├─ 02Years.png
-│  ├─ 35Years.png
-│  ├─ 3D.png
-│  ├─ 58Years.png
-│  ├─ banana.gif
-│  ├─ bedstory.png
-│  ├─ coin.png
-│  ├─ educational.png
-│  ├─ fav.png
-│  ├─ file.svg
-│  ├─ globe.svg
-│  ├─ hat.gif
-│  ├─ hero.png
-│  ├─ login.png
-│  ├─ logo.png
-│  ├─ logooo.png
-│  ├─ next.svg
-│  ├─ output_1ea94cc6-8577-491d-adb3-98abac318386.png
-│  ├─ output_a7ae64ef-05cc-4144-bfb9-27c636edae89.png
-│  ├─ output_bb21ba03-60c4-44ea-bff1-27f66248e32b.png
-│  ├─ paperCut.png
-│  ├─ pixel.png
-│  ├─ story.png
-│  ├─ vercel.svg
-│  ├─ wand.png
-│  ├─ watercolor.png
-│  └─ window.svg
 └─ Additional Documents and Assets
 
 ```
