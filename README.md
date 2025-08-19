@@ -49,6 +49,97 @@
 
 ## Getting Started
 
+### Folder Structure
+```
+KiddieGPT/
+├─ .github/
+│  ├─ ISSUE_TEMPLATE/
+│  │  ├─ bug_report.yml
+│  │  ├─ config.yml
+│  │  └─ feature_request.yml
+│  └─ pull_request_template.md
+├─ app/
+│  ├─ _components/
+│  │  ├─ Benefits.tsx
+│  │  ├─ CTA.tsx
+│  │  ├─ FeaturesSection.tsx
+│  │  ├─ Footer.tsx
+│  │  ├─ header.tsx
+│  │  ├─ hero.tsx
+│  │  ├─ HowItWorks.tsx
+│  │  ├─ Testimonials.tsx
+│  │  └─ TestimonialsSection.tsx
+│  ├─ (auth)/
+│  │  ├─ sign-in/
+│  │  │  └─ [[...sign-in]]/
+│  │  │     └─ page.tsx
+│  │  └─ sign-up/
+│  │     └─ [[...sign-up]]/
+│  │        └─ page.tsx
+│  ├─ api/
+│  │  ├─ generate-image/
+│  │  │  └─ route.ts
+│  │  ├─ save-image/
+│  │  │  └─ route.ts
+│  │  └─ stories/
+│  │     └─ route.ts
+│  ├─ buy-credits/
+│  │  └─ page.tsx
+│  ├─ contact/
+│  │  └─ page.tsx
+│  ├─ create-story/
+│  │  ├─ _components/
+│  │  │  ├─ age-group.tsx
+│  │  │  ├─ custom-loader.tsx
+│  │  │  ├─ image-style.tsx
+│  │  │  ├─ story-subject-input.tsx
+│  │  │  └─ story-type.tsx
+│  │  └─ page.tsx
+│  ├─ dashboard/
+│  │  ├─ _components/
+│  │  │  ├─ dashboard-header.tsx
+│  │  │  ├─ story-item-card.tsx
+│  │  │  └─ user-story-list.tsx
+│  │  └─ page.tsx
+│  ├─ explore/
+│  │  └─ page.tsx
+│  ├─ view-story/
+│  │  ├─ _components/
+│  │  │  ├─ book-cover-page.tsx
+│  │  │  ├─ last-page.tsx
+│  │  │  └─ story-pages.tsx
+│  │  └─ [storyId]/
+│  │     └─ page.tsx
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  ├─ not-found.js
+│  ├─ page.tsx
+│  └─ provider.tsx
+├─ components/
+│  └─ ui/
+│     ├─ alert-dialog.tsx
+│     ├─ button.tsx
+│     ├─ card.tsx
+│     ├─ input.tsx
+│     ├─ label.tsx
+│     ├─ select.tsx
+│     ├─ sonner.tsx
+│     └─ textarea.tsx
+├─ config/
+│  ├─ db.ts
+│  ├─ firebase-config.ts
+│  ├─ gemini-config.ts
+│  └─ schema.ts
+├─ context/
+│  └─ UserDetailContext.tsx
+├─ lib/
+│  └─ utils.ts
+└─ Additional Documents and Assets
+
+```
+
+
+
 Follow these steps to run KiddieGPT locally:
 
 ### Prerequisites
