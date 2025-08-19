@@ -11,7 +11,7 @@ export default function Benefits() {
   ];
 
   return (
-    <section className="relative py-20 overflow-hidden bg-gradient-to-br from-pink-100 via-purple-100 to-purple-200 dark:from-purple-900 dark:via-purple-800 dark:to-pink-900">
+    <section id="benefits" className="relative py-20 overflow-hidden bg-gradient-to-br from-pink-100 via-purple-100 to-purple-200 dark:from-purple-900 dark:via-purple-800 dark:to-pink-900">
       <div className="absolute top-0 left-1/4 w-72 h-72 bg-pink-400/30 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-400/30 rounded-full blur-3xl animate-pulse"></div>
 

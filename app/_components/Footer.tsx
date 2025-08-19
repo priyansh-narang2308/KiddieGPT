@@ -1,6 +1,7 @@
 "use client";
 
 import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -14,9 +15,9 @@ export default function Footer() {
         <nav className="flex flex-wrap justify-center gap-6 text-lg font-medium text-purple-800">
           <a href="#features" className="hover:text-purple-600 transition">Features</a>
           <a href="#benefits" className="hover:text-purple-600 transition">Benefits</a>
-          <a href="#stories" className="hover:text-purple-600 transition">Stories</a>
-          <a href="#pricing" className="hover:text-purple-600 transition">Pricing</a>
-          <a href="#contact" className="hover:text-purple-600 transition">Contact</a>
+          <a href="./view-story" className="hover:text-purple-600 transition">Stories</a>
+          <a href="./buy-credits/page" className="hover:text-purple-600 transition">Pricing</a>
+          <a href="./contact/page" className="hover:text-purple-600 transition">Contact</a>
         </nav>
 
         {/* Social Icons */}

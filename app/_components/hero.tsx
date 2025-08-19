@@ -42,6 +42,9 @@ const Hero = () => {
               transition={{ duration: 0.9 }}
 
               className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight"
+
+              className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight mx-7"
+
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.8 }}
@@ -51,7 +54,11 @@ const Hero = () => {
             </motion.h1>
 
             <motion.p
+
               className="text-lg md:text-xl text-purple-900/90 max-w-xl mx-auto md:mx-0"
+
+              className="text-lg md:text-xl text-purple-800/90 max-w-xl mx-auto md:mx-7"
+
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.8 }}
@@ -59,8 +66,17 @@ const Hero = () => {
               Create enchanting, personalized stories tailored to your child's interest-building creativity and a lifelong love of reading.
             </motion.p>
 
+
             {/* Buttons */}
             <motion.div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+
+            <motion.div
+              className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4 mx-7"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+            >
+
               <Link href={"/create-story"}>
 
                 <Button size="lg" className="btn-shine relative bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-purple-500/50">

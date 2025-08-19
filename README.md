@@ -1,3 +1,6 @@
+[![OSCI-Project-Banner.png](https://i.postimg.cc/76mJvBmF/OSCI-Project-Banner.png)](https://postimg.cc/8JfzMb84)
+
+
 # KiddieGPT
 
 **KiddieGPT** is a delightful AI-powered storytelling web application designed especially for kids. Using advanced AI models like Replicate API and Gemini AI, KiddieGPT generates engaging, customized stories that spark imagination and learning. The app features an intuitive UI built with Next.js and integrates PayPal for seamless story credit purchases.
