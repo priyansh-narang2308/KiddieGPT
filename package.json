@@ -25,7 +25,7 @@
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.2",
     "emailjs-com": "^3.2.0",
-    "firebase": "^11.9.0",
+    "firebase": "^11.10.0",
     "framer-motion": "^12.16.0",
     "lucide-react": "^0.513.0",
     "mime": "^4.0.7",
