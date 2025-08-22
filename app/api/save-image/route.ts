@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ imageUrl: downloadedUrl })
 }
 
-export const convertImage = async (imageUrl: string) => {
+const convertImage = async (imageUrl: string) => {
     try {
         const res = await axios.get(imageUrl, { responseType: "arraybuffer" });
         return Buffer.from(res.data).toString("base64"); 

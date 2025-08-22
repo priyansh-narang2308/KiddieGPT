@@ -1,3 +1,8 @@
+[![OSCI-Project-Banner.png](https://i.postimg.cc/76mJvBmF/OSCI-Project-Banner.png)](https://postimg.cc/8JfzMb84)
+
+
+
+# #OSCI #beginner #intermediate #advanced
 # KiddieGPT
 
 **KiddieGPT** is a delightful AI-powered storytelling web application designed especially for kids. Using advanced AI models like Replicate API and Gemini AI, KiddieGPT generates engaging, customized stories that spark imagination and learning. The app features an intuitive UI built with Next.js and integrates PayPal for seamless story credit purchases.
@@ -45,6 +50,97 @@
 ---
 
 ## Getting Started
+
+### Folder Structure
+```
+KiddieGPT/
+├─ .github/
+│  ├─ ISSUE_TEMPLATE/
+│  │  ├─ bug_report.yml
+│  │  ├─ config.yml
+│  │  └─ feature_request.yml
+│  └─ pull_request_template.md
+├─ app/
+│  ├─ _components/
+│  │  ├─ Benefits.tsx
+│  │  ├─ CTA.tsx
+│  │  ├─ FeaturesSection.tsx
+│  │  ├─ Footer.tsx
+│  │  ├─ header.tsx
+│  │  ├─ hero.tsx
+│  │  ├─ HowItWorks.tsx
+│  │  ├─ Testimonials.tsx
+│  │  └─ TestimonialsSection.tsx
+│  ├─ (auth)/
+│  │  ├─ sign-in/
+│  │  │  └─ [[...sign-in]]/
+│  │  │     └─ page.tsx
+│  │  └─ sign-up/
+│  │     └─ [[...sign-up]]/
+│  │        └─ page.tsx
+│  ├─ api/
+│  │  ├─ generate-image/
+│  │  │  └─ route.ts
+│  │  ├─ save-image/
+│  │  │  └─ route.ts
+│  │  └─ stories/
+│  │     └─ route.ts
+│  ├─ buy-credits/
+│  │  └─ page.tsx
+│  ├─ contact/
+│  │  └─ page.tsx
+│  ├─ create-story/
+│  │  ├─ _components/
+│  │  │  ├─ age-group.tsx
+│  │  │  ├─ custom-loader.tsx
+│  │  │  ├─ image-style.tsx
+│  │  │  ├─ story-subject-input.tsx
+│  │  │  └─ story-type.tsx
+│  │  └─ page.tsx
+│  ├─ dashboard/
+│  │  ├─ _components/
+│  │  │  ├─ dashboard-header.tsx
+│  │  │  ├─ story-item-card.tsx
+│  │  │  └─ user-story-list.tsx
+│  │  └─ page.tsx
+│  ├─ explore/
+│  │  └─ page.tsx
+│  ├─ view-story/
+│  │  ├─ _components/
+│  │  │  ├─ book-cover-page.tsx
+│  │  │  ├─ last-page.tsx
+│  │  │  └─ story-pages.tsx
+│  │  └─ [storyId]/
+│  │     └─ page.tsx
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  ├─ not-found.js
+│  ├─ page.tsx
+│  └─ provider.tsx
+├─ components/
+│  └─ ui/
+│     ├─ alert-dialog.tsx
+│     ├─ button.tsx
+│     ├─ card.tsx
+│     ├─ input.tsx
+│     ├─ label.tsx
+│     ├─ select.tsx
+│     ├─ sonner.tsx
+│     └─ textarea.tsx
+├─ config/
+│  ├─ db.ts
+│  ├─ firebase-config.ts
+│  ├─ gemini-config.ts
+│  └─ schema.ts
+├─ context/
+│  └─ UserDetailContext.tsx
+├─ lib/
+│  └─ utils.ts
+└─ Additional Documents and Assets
+
+```
+
+
 
 Follow these steps to run KiddieGPT locally:
 

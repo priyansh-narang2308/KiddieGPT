@@ -26,15 +26,18 @@ export default function SignInPage() {
                     </div>
 
                     <div className="rounded-xl border border-purple-200 bg-purple-50/30 shadow-md p-6">
-                        <SignIn appearance={{
-                            elements: {
-                                formButtonPrimary: "bg-purple-600 hover:bg-purple-700 focus:ring-purple-500",
-                                card: "shadow-none bg-transparent",
-                            },
-                            variables: {
-                                colorPrimary: "#7e22ce",
-                            },
-                        }} />
+                       <SignIn
+                        signUpUrl="/sign-up"
+  appearance={{
+    elements: {
+      formButtonPrimary: "bg-purple-600 hover:bg-purple-700 focus:ring-purple-500",
+      card: "shadow-none bg-transparent",
+    },
+    variables: {
+      colorPrimary: "#7e22ce",
+    },
+  }}
+/>
                     </div>
                 </div>
             </div>
