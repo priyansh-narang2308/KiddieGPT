@@ -1,22 +1,24 @@
 "use client"
 
+import { useContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
+import axios from "axios"
+import { v4 as uuidv4 } from 'uuid'
+import { eq } from 'drizzle-orm'
+import { toast } from 'react-toastify'
+
 import { Button } from '@/components/ui/button'
 import AgeGroup from './_components/age-group'
 import ImageStyle from './_components/image-style'
 import StorySubjectInput from './_components/story-subject-input'
 import StoryType from './_components/story-type'
-import { useContext, useEffect, useState } from 'react'
+import CustomLoader from './_components/custom-loader'
+
+import { UserDetailContext } from '@/context/UserDetailContext'
 import { generateKidsStoryAI } from '@/config/gemini-config'
-import { toast } from 'react-toastify'
 import { db } from '@/config/db'
 import { StoryData, Users } from '@/config/schema'
-import axios from "axios"
-import { v4 as uuidv4 } from 'uuid'
-import CustomLoader from './_components/custom-loader'
-import { useRouter } from 'next/navigation'
-import { useUser } from '@clerk/nextjs'
-import { UserDetailContext } from '@/context/UserDetailContext'
-import { eq } from 'drizzle-orm'
 
 export interface fieldData {
   fieldName: string,
@@ -31,19 +33,20 @@ export interface formDataType {
 }
 
 const CreateStory = () => {
+  const { userDetail, setUserDetail } = useContext(UserDetailContext)
+  const { user } = useUser()
+  const router = useRouter()
+
   const [formData, setFormData] = useState<formDataType>({
     storySubject: '',
     storyType: '',
     ageGroup: '',
     imageStyle: ''
   })
-
-  const { userDetail, setUserDetail } = useContext(UserDetailContext)
-
-  const { user } = useUser()
   const [loading, setLoading] = useState(false)
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null)
-  const router = useRouter()
+  const [parsedStory, setParsedStory] = useState<any>(null)
+
 
   const onHandleUserSelection = (data: fieldData) => {
     setFormData(prev => ({
@@ -56,7 +59,19 @@ const CreateStory = () => {
     console.log('Updated formData:', formData)
   }, [formData])
 
-  const saveToDatabaseTheGeneratedStory = async (output: string, imageUrl: string) => {
+  const updateUserCredits = async () => {
+    try {
+      await db.update(Users).set({
+        credits: Number(userDetail?.credits - 1)
+      }).where(eq(Users.userEmail, user?.primaryEmailAddress?.emailAddress ?? ""))
+        .returning({ id: Users.id })
+    } catch (error) {
+      console.error("Error updating user credits:", error)
+      toast.error("Failed to update credits")
+    }
+  }
+
+  const saveToDatabaseTheGeneratedStory = async (output: string, imageUrl: string, parsedStory: any) => {
     const recordId = uuidv4()
     setLoading(true)
     try {
@@ -70,7 +85,9 @@ const CreateStory = () => {
         coverImage: imageUrl,
         userEmail: user?.primaryEmailAddress?.emailAddress,
         userName: user?.fullName,
-        userImage: user?.imageUrl
+        userImage: user?.imageUrl,
+        vocabulary: parsedStory.vocabulary, // Added from the new structure
+        moral: parsedStory.moral // Added from the new structure
       }).returning({ storyId: StoryData.storyId })
 
       setLoading(false)
@@ -84,7 +101,6 @@ const CreateStory = () => {
   }
 
   const generateStoryFromAI = async () => {
-
     if (userDetail.credits <= 0) {
       toast.error("You don't have enough credits")
       return
@@ -108,9 +124,11 @@ Include:
 - 5 chapters with little descriptive and long story, fun story text
 - A {imageStyle}-style image prompt for each chapter
 - A cover image prompt in {imageStyle} style with the story title
+- A short list of 5-8 vocabulary words (age-appropriate) with simple meanings
+- A moral/lesson for the story
 
-Format everything in clean JSON with keys: title, coverImage, chapters.`
-
+Format everything in clean JSON with keys: title, coverImage, chapters, vocabulary, moral.
+`
     const FINAL_PROMPT = CREATE_STORY_PROMPT
       .replace("{ageGroup}", formData.ageGroup)
       .replace("{storyType}", formData.storyType)
@@ -119,9 +137,10 @@ Format everything in clean JSON with keys: title, coverImage, chapters.`
 
     try {
       const story = await generateKidsStoryAI(FINAL_PROMPT)
-      const parsedStory = typeof story === 'string' ? JSON.parse(story) : story
+      const storyData = typeof story === 'string' ? JSON.parse(story) : story
+      setParsedStory(storyData)
 
-      const imagePrompt = `${parsedStory.coverImage} in ${formData.imageStyle} style. Text: "${parsedStory.title}" in bold, centered at the top like a storybook cover. Clean background, well-lit, high-quality illustration.`
+      const imagePrompt = `${storyData.coverImage} in ${formData.imageStyle} style. Text: "${storyData.title}" in bold, centered at the top like a storybook cover. Clean background, well-lit, high-quality illustration.`
 
       const imageResp = await axios.post("/api/generate-image", { prompt: imagePrompt })
 
@@ -141,8 +160,7 @@ Format everything in clean JSON with keys: title, coverImage, chapters.`
       const firebaseStorageImageurl = imageResult.data.imageUrl
 
       // SAVE TO DATABASE
-      const result = await saveToDatabaseTheGeneratedStory(JSON.stringify(parsedStory), firebaseStorageImageurl)
-
+      const result = await saveToDatabaseTheGeneratedStory(JSON.stringify(storyData), firebaseStorageImageurl, storyData)
 
       toast.success("🦄 Story Generated Successfully!", {
         position: "top-right",
@@ -158,15 +176,6 @@ Format everything in clean JSON with keys: title, coverImage, chapters.`
     } finally {
       setLoading(false)
     }
-  }
-
-  // NOTE: THE CREDIT THING 
-
-  const updateUserCredits = async () => {
-    const result = await db.update(Users).set({
-      credits: Number(userDetail?.credits - 1)
-    }).where(eq(Users.userEmail, user?.primaryEmailAddress?.emailAddress ?? ""))
-      .returning({ id: Users.id })
   }
 
   return (
@@ -191,7 +200,7 @@ Format everything in clean JSON with keys: title, coverImage, chapters.`
             disabled={loading}
             onClick={generateStoryFromAI}
             className="px-10 py-5 text-xl cursor-pointer font-semibold rounded-full bg-gradient-to-r from-purple-600 to-purple-800 text-white 
-     shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105"
+             shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105"
           >
             ✨ Generate Story
           </Button>
@@ -200,10 +209,27 @@ Format everything in clean JSON with keys: title, coverImage, chapters.`
             ⚠️ 1 shiny magic bean will be used to grow your story 🌱✨ — spend it like a true bedtime hero!
           </span>
 
-
           <CustomLoader isOpen={loading} />
         </div>
       </div>
+      
+      {parsedStory && parsedStory.vocabulary && (
+        <div className="mt-6">
+          <h3 className="text-xl font-semibold">Vocabulary</h3>
+          <ul className="list-disc pl-6">
+            {parsedStory.vocabulary.map((word: string, idx: number) => (
+              <li key={idx}>{word}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {parsedStory && parsedStory.moral && (
+        <div className="mt-6">
+          <h3 className="text-xl font-semibold">Moral of the Story</h3>
+          <p>{parsedStory.moral}</p>
+        </div>
+      )}
     </section>
   )
 }
