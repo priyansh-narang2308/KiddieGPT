@@ -85,7 +85,7 @@ const ExploreStories: React.FC = () => {
       <h1 className="text-3xl md:text-4xl text-purple-800 font-bold mb-8 text-center">
         Explore Stories from the Community 🌍
       </h1>
-      <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-8">
+      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
         <input
           type="text"
           placeholder="Search by title or author..."
@@ -128,9 +128,9 @@ const ExploreStories: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 justify-items-center w-full">
           {filtered.map((item) => (
-            <div key={item.id} className="relative w-full flex justify-center">
+            <div key={item.id} className="relative w-full max-w-xs sm:max-w-sm md:max-w-md flex justify-center">
   <StoryItemCard story={item} />
   
   <button
