@@ -128,9 +128,9 @@ const ExploreStories: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 justify-items-center w-full">
           {filtered.map((item) => (
-            <div key={item.id} className="relative w-full flex justify-center">
+            <div key={item.id} className="relative w-full max-w-xs sm:max-w-sm md:max-w-md flex justify-center">
   <StoryItemCard story={item} />
   
   <button
