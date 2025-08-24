@@ -85,7 +85,7 @@ const ExploreStories: React.FC = () => {
       <h1 className="text-3xl md:text-4xl text-purple-800 font-bold mb-8 text-center">
         Explore Stories from the Community 🌍
       </h1>
-      <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-8">
+      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
         <input
           type="text"
           placeholder="Search by title or author..."
