@@ -8,6 +8,7 @@ import HTMLFlipBook from "react-pageflip"
 import BookCoverPage from "../_components/book-cover-page"
 import StoryPages from "../_components/story-pages"
 import LastPage from "../_components/last-page"
+import RestyleButton from "../_components/restyle-button"
 import { IoIosArrowDroprightCircle, IoIosArrowDropleftCircle } from "react-icons/io";
 
 interface Chapter {
@@ -28,6 +29,7 @@ interface StoryRecord {
   storyId: string;
   output: StoryOutput;
   coverImage: string;
+  imageStyle: string;
 }
 
 const ViewStory = ({ params: paramsPromise }: { params: Promise<{ storyId: string }> }) => {
@@ -38,22 +40,22 @@ const ViewStory = ({ params: paramsPromise }: { params: Promise<{ storyId: strin
   const [totalPages, setTotalPages] = useState<number>(0)
   const flipBookRef = useRef<any>(null)
 
-  useEffect(() => {
-    const getStoryFromDb = async () => {
-      const result = await db.select().from(StoryData)
-        .where(eq(StoryData.storyId, storyId)) as StoryRecord[]
+  const getStoryFromDb = async () => {
+    const result = await db.select().from(StoryData)
+      .where(eq(StoryData.storyId, storyId)) as StoryRecord[]
 
-      if (result.length > 0) {
-        setStoryData(result[0])
+    if (result.length > 0) {
+      setStoryData(result[0])
 
-        if (result[0].output && Array.isArray(result[0].output.chapters)) {
-          setTotalPages(result[0].output.chapters.length + 2) // cover + chapters + last page
-        } else {
-          setTotalPages(2) // fallback
-        }
+      if (result[0].output && Array.isArray(result[0].output.chapters)) {
+        setTotalPages(result[0].output.chapters.length + 2) // cover + chapters + last page
+      } else {
+        setTotalPages(2) // fallback
       }
     }
+  }
 
+  useEffect(() => {
     getStoryFromDb()
   }, [storyId])
 
@@ -73,11 +75,29 @@ const ViewStory = ({ params: paramsPromise }: { params: Promise<{ storyId: strin
     }
   }
 
+  const handleRestyleComplete = () => {
+    // Refresh story data after re-styling
+    getStoryFromDb()
+  }
+
   return (
     <div className="min-h-screen mt-16 bg-gradient-to-r from-indigo-100 via-purple-200 to-pink-100 p-6 md:px-20 lg:px-40">
-      <h1 className="text-center text-5xl bg-gradient-to-r from-indigo-100 via-purple-200 to-pink-100 font-extrabold text-gray-800 mb-12 tracking-wide drop-shadow-2xl rounded-2xl p-3">
-        {storyData?.output?.title || "Loading Story..."}
-      </h1>
+      <div className="text-center mb-8">
+        <h1 className="text-5xl bg-gradient-to-r from-indigo-100 via-purple-200 to-pink-100 font-extrabold text-gray-800 mb-6 tracking-wide drop-shadow-2xl rounded-2xl p-3">
+          {storyData?.output?.title || "Loading Story..."}
+        </h1>
+        
+        {/* Re-style Button */}
+        {storyData && (
+          <div className="flex justify-center mb-6">
+            <RestyleButton 
+              storyId={storyId} 
+              currentStyle={storyData.imageStyle || 'unknown'}
+              onRestyleComplete={handleRestyleComplete}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="relative">
         {storyData && (
