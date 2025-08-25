@@ -244,7 +244,6 @@ const CreateStory = () => {
         })
         .returning({ storyId: StoryData.storyId });
 
-<<<<<<< HEAD
       // Save character if consistency is enabled
       if (enforceConsistency && characterData.name) {
         const characterId = await saveCharacterToDatabase()
@@ -253,12 +252,8 @@ const CreateStory = () => {
         }
       }
 
-      setLoading(false)
-      return result
-=======
       setLoading(false);
       return result;
->>>>>>> upstream/main
     } catch (error) {
       console.log(error);
       setLoading(false);
