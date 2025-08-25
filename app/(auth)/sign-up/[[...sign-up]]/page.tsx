@@ -1,46 +1,69 @@
-"use client"
+import { useState } from "react";
 
-import { SignUp } from '@clerk/nextjs'
-import Image from 'next/image'
+export default function SignUp() {
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
 
-export default function SignInPage() {
-    return (
-        <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-purple-100">
-            <div className="hidden md:flex items-center justify-center bg-purple-200 p-10">
-                <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden shadow-xl border border-purple-300">
-                    <Image
-                        src="/login.png"
-                        alt="Login illustration"
-                        fill
-                        className="object-cover"
-                        priority
-                    />
-                </div>
-            </div>
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-            <div className="flex items-center justify-center p-6 md:p-12 bg-white">
-                <div className="w-full max-w-md space-y-6">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-bold text-purple-800 mt-15">Let's Get Started</h2>
-                        <p className="mt-2 text-purple-600">Sign up to begin your magical storytelling journey ✨</p>
-                    </div>
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted:", form);
+    // Add signup logic (API call)
+  };
 
+  return (
+    <main className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-100 to-blue-100 px-4">
+      <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">
+          Create an Account
+        </h1>
 
-                    <div className="rounded-xl border border-purple-200 bg-purple-50/30 shadow-md p-6">
-                        <SignUp
-                       signInUrl='/sign-in'
-               appearance={{
-                            elements: {
-                                formButtonPrimary: "bg-purple-600 hover:bg-purple-700 focus:ring-purple-500",
-                                card: "shadow-none bg-transparent",
-                            },
-                            variables: {
-                                colorPrimary: "#7e22ce",
-                            },
-                        }} />
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={form.name}
+            onChange={handleChange}
+            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold p-3 rounded-lg transition"
+          >
+            Sign Up
+          </button>
+        </form>
+
+        <p className="text-sm text-center text-gray-600 mt-4">
+          Already have an account?{" "}
+          <a href="/signin" className="text-blue-500 hover:underline">
+            Sign In
+          </a>
+        </p>
+      </div>
+    </main>
+  );
 }
