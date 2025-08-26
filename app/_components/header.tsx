@@ -22,6 +22,7 @@ const Header = () => {
   const menuList = [
     { name: "Create Story", path: "/create-story" },
     { name: "Explore Stories", path: "/explore" },
+    { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
 
