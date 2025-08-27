@@ -23,6 +23,7 @@ const Header = () => {
     { name: "Create Story", path: "/create-story" },
     { name: "Explore Stories", path: "/explore" },
     { name: "Contact", path: "/contact" },
+    { name: "Vocabulary", path: "/vocabulary" },
   ];
 
   const itemVariants = {

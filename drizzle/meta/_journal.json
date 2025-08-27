@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1756271069045,
+      "tag": "0000_brainy_chamber",
+      "breakpoints": true
+    }
+  ]
+}

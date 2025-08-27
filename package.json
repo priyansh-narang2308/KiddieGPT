@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:generate": "dotenv -e .env.local -- drizzle-kit generate",
+    "db:push": "dotenv -e .env.local -- drizzle-kit push",
+    "db:studio": "dotenv -e .env.local -- drizzle-kit studio"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.21.0",
@@ -34,10 +35,12 @@
     "next-themes": "^0.4.6",
     "pg": "^8.16.0",
     "react": "^19.0.0",
+    "react-countup": "^6.5.3",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-pageflip": "^2.0.3",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.1.2",
     "replicate": "^1.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.0",
@@ -49,6 +52,8 @@
     "@types/pg": "^8.15.4",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19",
+    "@types/recharts": "^1.8.29",
+    "dotenv-cli": "^10.0.0",
     "drizzle-kit": "^0.31.4",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
