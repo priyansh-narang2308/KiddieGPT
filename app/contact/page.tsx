@@ -11,6 +11,21 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Function to open Gmail compose directly
+  const handleEmailClick = () => {
+    const email = "priyanshnarang23@gmail.com";
+    const subject = "Hello from KiddieGPT!";
+    const body = "Hi there!\n\nI would like to get in touch with you.";
+    
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank');
+  };
+
+  // Function to handle phone click
+  const handlePhoneClick = () => {
+    window.location.href = "tel:+918320396828";
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -59,7 +74,7 @@ const Contact = () => {
             ✨ Get in Touch ✨
           </h1>
           <p className="text-pink-600 mt-2 text-lg">
-            Have questions, magical ideas, or just want to say hi? We’d love to
+            Have questions, magical ideas, or just want to say hi? We'd love to
             hear from you! 🦄🌈
           </p>
         </div>
@@ -67,22 +82,38 @@ const Contact = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="p-6 rounded-2xl bg-gradient-to-br from-pink-200 to-purple-200 shadow-md"
+            className="p-6 rounded-2xl bg-gradient-to-br from-pink-200 to-purple-200 shadow-md cursor-pointer"
+            onClick={handleEmailClick}
           >
             <Mail className="w-10 h-10 mx-auto text-purple-700" />
             <h3 className="font-bold text-purple-800 mt-3">Email Us</h3>
-            <p className="text-sm text-purple-600">
+            <span 
+              className="text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors duration-200 cursor-pointer block"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent the card click from also firing
+                handleEmailClick();
+              }}
+            >
               priyanshnarang23@gmail.com
-            </p>
+            </span>
           </motion.div>
 
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="p-6 rounded-2xl bg-gradient-to-br from-purple-200 to-pink-200 shadow-md"
+            className="p-6 rounded-2xl bg-gradient-to-br from-purple-200 to-pink-200 shadow-md cursor-pointer"
+            onClick={handlePhoneClick}
           >
             <Phone className="w-10 h-10 mx-auto text-pink-700" />
             <h3 className="font-bold text-pink-800 mt-3">Call Us</h3>
-            <p className="text-sm text-pink-600">+91 8320396828</p>
+            <span 
+              className="text-sm text-pink-600 hover:text-pink-800 hover:underline transition-colors duration-200 cursor-pointer block"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent the card click from also firing
+                handlePhoneClick();
+              }}
+            >
+              +91 8320396828
+            </span>
           </motion.div>
 
           <motion.div
@@ -92,7 +123,7 @@ const Contact = () => {
             <MessageCircle className="w-10 h-10 mx-auto text-fuchsia-700" />
             <h3 className="font-bold text-fuchsia-800 mt-3">Chat With Us</h3>
             <p className="text-sm text-fuchsia-600">
-              We’re just a message away!
+              We're just a message away!
             </p>
           </motion.div>
         </div>
