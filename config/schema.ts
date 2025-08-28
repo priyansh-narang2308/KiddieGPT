@@ -56,3 +56,12 @@ export const PageGenerations = pgTable("pageGenerations", {
     style: varchar("style").notNull(),
     createdAt: timestamp("createdAt").defaultNow()
 })
+
+//Vocabulary
+export const VocabularyWords = pgTable("vocabulary_words", {
+    id: serial("id").primaryKey(),
+    userId: integer("userId").references(() => Users.id), 
+    word: varchar("word", { length: 100 }).notNull(),
+    note: text("note"), 
+    createdAt: timestamp("created_at").defaultNow(),
+})
