@@ -1,6 +1,4 @@
-
 import { integer, json, pgTable, serial, text, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
-
 
 export const StoryData = pgTable("storyData", {
     id: serial("id").primaryKey(),
@@ -23,7 +21,6 @@ export const Users = pgTable("users", {
     userImage: varchar("userImage"),
     credits: integer("credits").default(3)
 })
-
 
 export const VocabularyWords = pgTable("vocabulary_words", {
     id: serial("id").primaryKey(),
