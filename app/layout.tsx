@@ -6,6 +6,7 @@ import Header from "./_components/header";
 import { ToastContainer } from "react-toastify";
 import Provider from "./provider";
 import { Toaster } from "sonner";
+import BackToTopButton from "./_components/BackToTopButton"; // Import the new component
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -28,7 +29,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body className={nunito.className} suppressHydrationWarning={true}>
-          <Provider>{children}</Provider>
+          <Provider>
+            {children}
+            <BackToTopButton /> {/* Add the button here */}
+          </Provider>
           <ToastContainer
             position="top-right"
             autoClose={5000}
