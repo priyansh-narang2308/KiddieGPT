@@ -60,7 +60,7 @@ export const PageGenerations = pgTable("pageGenerations", {
 //Vocabulary
 export const VocabularyWords = pgTable("vocabulary_words", {
     id: serial("id").primaryKey(),
-    userId: integer("userId").references(() => Users.id), 
+    userId: varchar("userId", { length: 255 }).notNull(),
     word: varchar("word", { length: 100 }).notNull(),
     note: text("note"), 
     createdAt: timestamp("created_at").defaultNow(),

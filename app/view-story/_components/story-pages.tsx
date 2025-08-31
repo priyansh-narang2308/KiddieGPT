@@ -1,12 +1,17 @@
 import { UserDetailContext } from "@/context/UserDetailContext";
-import { useState, useEffect, useContext, useMemo } from "react";
-import { IoMdPlayCircle } from "react-icons/io";
+import { useState, useEffect, useContext, useMemo, useRef } from "react";
+import { IoMdPlay, IoMdPause } from "react-icons/io";
+import { IoStop } from "react-icons/io5";
 
 const StoryPages = ({ storyChapters }: any) => {
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
+    const [speechRate, setSpeechRate] = useState(1); // Default speed 1x
     const { userDetail } = useContext(UserDetailContext);
 
-    const playSpeech = (text: string) => {
+    const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+    const playSpeech = (text: string, rate: number = speechRate) => {
         if (!text) return;
 
         const synth = window.speechSynthesis;
@@ -17,15 +22,48 @@ const StoryPages = ({ storyChapters }: any) => {
 
         const utterance = new SpeechSynthesisUtterance(text);
 
-        utterance.rate = 1;
+        utterance.rate = rate;
         utterance.pitch = 1;
         utterance.volume = 1;
 
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
+        utterance.onstart = () => {
+            setIsSpeaking(true);
+            setIsPaused(false);
+        };
+        utterance.onend = () => {
+            setIsSpeaking(false);
+            setIsPaused(false);
+        };
+        utterance.onerror = () => {
+            setIsSpeaking(false);
+            setIsPaused(false);
+        };
 
+        utteranceRef.current = utterance;
         synth.speak(utterance);
+    };
+
+    const togglePlayPause = () => {
+        const synth = window.speechSynthesis;
+
+        if (!isSpeaking) {
+            // Start speaking
+            playSpeech(storyChapters?.chapterText, speechRate);
+        } else if (isPaused) {
+            // Resume
+            synth.resume();
+            setIsPaused(false);
+        } else {
+            // Pause
+            synth.pause();
+            setIsPaused(true);
+        }
+    };
+
+    const stopSpeech = () => {
+        window.speechSynthesis.cancel();
+        setIsSpeaking(false);
+        setIsPaused(false);
     };
 
     const saveWord = async (word: string) => {
@@ -67,16 +105,53 @@ const StoryPages = ({ storyChapters }: any) => {
         <div className="h-full flex flex-col justify-start relative">
             <h2 className="flex items-center text-3xl font-bold mb-4 text-purple-800">
                 <span>{storyChapters?.chapterTitle}</span>
-                <IoMdPlayCircle
-                    onClick={() => !isSpeaking && playSpeech(storyChapters?.chapterText)}
-                    className={`ml-3 cursor-pointer transition-colors duration-200 ${
-                        isSpeaking ? "text-purple-400" : "text-purple-600 hover:text-purple-800"
-                    }`}
-                    size={35}
-                    aria-label="Play chapter"
-                    role="button"
-                    title={isSpeaking ? "Speaking..." : "Play chapter"}
-                />
+
+                {/* Single Play/Pause/Resume button */}
+                <button
+                    onClick={togglePlayPause}
+                    className="ml-3 text-purple-600 hover:text-purple-800"
+                    title={!isSpeaking ? "Play" : isPaused ? "Resume" : "Pause"}
+                >
+                    {!isSpeaking ? (
+                        <IoMdPlay size={35} />
+                    ) : isPaused ? (
+                        <IoMdPlay size={35} />
+                    ) : (
+                        <IoMdPause size={35} />
+                    )}
+                </button>
+
+                {/* Stop button */}
+                {isSpeaking && (
+                    <button
+                        onClick={stopSpeech}
+                        className="ml-3 text-red-600 hover:text-red-800"
+                        title="Stop"
+                    >
+                        <IoStop size={30} />
+                    </button>
+                )}
+
+                {/* Speed control */}
+                <select
+                    className="ml-3 border border-gray-300 rounded px-2 py-1 text-sm"
+                    value={speechRate}
+                    onChange={(e) => {
+                        const newRate = parseFloat(e.target.value);
+                        setSpeechRate(newRate);
+
+                        if (isSpeaking) {
+                            window.speechSynthesis.cancel();
+                            playSpeech(storyChapters?.chapterText, newRate);
+                        }
+                    }}
+                    title="Set narration speed"
+                >
+                    <option value={0.25}>0.25x</option>
+                    <option value={0.5}>0.5x</option>
+                    <option value={0.75}>0.75x</option>
+                    <option value={1}>1x</option>
+                </select>
             </h2>
 
             <p className="text-lg mt-6 text-gray-800 bg-slate-100 rounded-lg p-6 shadow-inner leading-relaxed tracking-wide">

@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const words = await db
       .select()
       .from(VocabularyWords)
-      .where(eq(VocabularyWords.userId, Number(userId)));
+      .where(eq(VocabularyWords.userId, userId));
 
     // Deduplicate and normalize
     const uniqueWords = Array.from(
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const newWord = await db
       .insert(VocabularyWords)
       .values({
-        userId: Number(userId),
+        userId,
         word: normalizedWord,
         note: note || null,
       })
