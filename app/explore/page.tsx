@@ -37,7 +37,7 @@ const ExploreStories: React.FC = () => {
   const [search, setSearch] = useState("");
   const [ageGroup, setAgeGroup] = useState("All");
   const [storyType, setStoryType] = useState("All");
-  const [likes, setLikes] = useState<{ [id: number]: boolean }>({});
+  const [likes, setLikes] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     const fetchStories = async () => {
@@ -129,32 +129,36 @@ const ExploreStories: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 justify-items-center w-full">
-          {filtered.map((item) => (
-            <div key={item.id} className="relative w-full max-w-xs sm:max-w-sm md:max-w-md flex justify-center">
-  <StoryItemCard story={item} />
-  
-  <button
-    className={`
-      absolute top-4 right-4 z-10 p-2 rounded-full 
-      bg-white/70 backdrop-blur-sm shadow-md
-      transition-all duration-300 ease-in-out
-      hover:scale-110
-    `}
-    onClick={(e) => {
-      e.stopPropagation();
-      setLikes((l) => ({ ...l, [item.id]: !l[item.id] }));
-    }}
-    aria-label={likes[item.id] ? "Unlike" : "Like"}
-  >
-    <Heart
-      className={`w-6 h-6 cursor-pointe transition-colors duration-300 ${
-        likes[item.id]
-          ? "fill-pink-500 text-pink-500"
-          : "text-gray-500"
-      }`}
-    />
-  </button>
-</div>
+          {filtered.map((item, index) => (
+            <div 
+              key={`${item.id}-${index}-${item.storyId}`}
+              className="relative w-full max-w-xs sm:max-w-sm md:max-w-md flex justify-center transition-transform duration-300 ease-in-out hover:scale-105"
+            >
+              <StoryItemCard story={item} />
+              
+              <button
+                className={`
+                  absolute top-4 right-4 z-10 p-2 rounded-full 
+                  bg-white/70 backdrop-blur-sm shadow-md
+                  transition-all duration-300 ease-in-out
+                  hover:scale-110
+                `}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const uniqueKey = `${item.id}-${index}-${item.storyId}`;
+                  setLikes((l) => ({ ...l, [uniqueKey]: !l[uniqueKey] }));
+                }}
+                aria-label={likes[`${item.id}-${index}-${item.storyId}`] ? "Unlike" : "Like"}
+              >
+                <Heart
+                  className={`w-6 h-6 cursor-pointer transition-colors duration-300 ${
+                    likes[`${item.id}-${index}-${item.storyId}`]
+                      ? "fill-pink-500 text-pink-500"
+                      : "text-gray-500"
+                  }`}
+                />
+              </button>
+            </div>
           ))}
           <CustomLoader isOpen={loading} />
         </div>
