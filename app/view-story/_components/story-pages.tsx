@@ -6,7 +6,9 @@ import { IoStop } from "react-icons/io5";
 const StoryPages = ({ storyChapters }: any) => {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
-    const [speechRate, setSpeechRate] = useState(1); // Default speed 1x
+    const [speechRate, setSpeechRate] = useState(1);
+    const [savingWord, setSavingWord] = useState<string | null>(null); // safeguard
+    const [highlightIndex, setHighlightIndex] = useState<number | null>(null); // highlight spoken word
     const { userDetail } = useContext(UserDetailContext);
 
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -26,6 +28,15 @@ const StoryPages = ({ storyChapters }: any) => {
         utterance.pitch = 1;
         utterance.volume = 1;
 
+        // Highlight word as it is spoken
+        utterance.onboundary = (event) => {
+            if (event.name === "word" || event.charIndex !== undefined) {
+                const spokenTextUpToNow = text.slice(0, event.charIndex);
+                const currentIndex = spokenTextUpToNow.split(/\s+/).length - 1;
+                setHighlightIndex(currentIndex);
+            }
+        };
+
         utterance.onstart = () => {
             setIsSpeaking(true);
             setIsPaused(false);
@@ -33,10 +44,12 @@ const StoryPages = ({ storyChapters }: any) => {
         utterance.onend = () => {
             setIsSpeaking(false);
             setIsPaused(false);
+            setHighlightIndex(null); // clear highlight after finishing
         };
         utterance.onerror = () => {
             setIsSpeaking(false);
             setIsPaused(false);
+            setHighlightIndex(null);
         };
 
         utteranceRef.current = utterance;
@@ -47,11 +60,19 @@ const StoryPages = ({ storyChapters }: any) => {
         const synth = window.speechSynthesis;
 
         if (!isSpeaking) {
-            // Start speaking
+            // Start speech
             playSpeech(storyChapters?.chapterText, speechRate);
         } else if (isPaused) {
-            // Resume
-            synth.resume();
+            // ✅ Robust resume hack (works in Chrome)
+            const resumeInterval = setInterval(() => {
+                if (!synth.paused) {
+                    clearInterval(resumeInterval);
+                    return;
+                }
+                synth.resume();
+            }, 50);
+
+            setTimeout(() => clearInterval(resumeInterval), 1000); // stop loop after 1s
             setIsPaused(false);
         } else {
             // Pause
@@ -64,11 +85,13 @@ const StoryPages = ({ storyChapters }: any) => {
         window.speechSynthesis.cancel();
         setIsSpeaking(false);
         setIsPaused(false);
+        setHighlightIndex(null);
     };
 
     const saveWord = async (word: string) => {
-        if (!word.trim() || !userDetail?.id) return;
+        if (!word.trim() || !userDetail?.id || savingWord) return;
 
+        setSavingWord(word); // lock this word
         const note = prompt(`Add a note for "${word}" (optional):`) || null;
 
         try {
@@ -76,7 +99,7 @@ const StoryPages = ({ storyChapters }: any) => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    userId: userDetail.id,
+                    userId: String(userDetail.id),
                     word,
                     note,
                 }),
@@ -87,6 +110,8 @@ const StoryPages = ({ storyChapters }: any) => {
         } catch (error) {
             console.error(error);
             alert("Failed to save word.");
+        } finally {
+            setSavingWord(null); // unlock
         }
     };
 
@@ -106,7 +131,6 @@ const StoryPages = ({ storyChapters }: any) => {
             <h2 className="flex items-center text-3xl font-bold mb-4 text-purple-800">
                 <span>{storyChapters?.chapterTitle}</span>
 
-                {/* Single Play/Pause/Resume button */}
                 <button
                     onClick={togglePlayPause}
                     className="ml-3 text-purple-600 hover:text-purple-800"
@@ -121,7 +145,6 @@ const StoryPages = ({ storyChapters }: any) => {
                     )}
                 </button>
 
-                {/* Stop button */}
                 {isSpeaking && (
                     <button
                         onClick={stopSpeech}
@@ -132,7 +155,6 @@ const StoryPages = ({ storyChapters }: any) => {
                     </button>
                 )}
 
-                {/* Speed control */}
                 <select
                     className="ml-3 border border-gray-300 rounded px-2 py-1 text-sm"
                     value={speechRate}
@@ -155,16 +177,32 @@ const StoryPages = ({ storyChapters }: any) => {
             </h2>
 
             <p className="text-lg mt-6 text-gray-800 bg-slate-100 rounded-lg p-6 shadow-inner leading-relaxed tracking-wide">
-                {words.map((word: string, idx: number) => (
-                    <span
-                        key={idx}
-                        className="cursor-pointer hover:bg-yellow-200 rounded px-1"
-                        onClick={() => saveWord(word.replace(/[^a-zA-Z]/g, ""))}
-                        title="Click to save this word"
-                    >
-                        {word}{" "}
-                    </span>
-                ))}
+                {words.map((word: string, idx: number) => {
+                    const cleanedWord = word.replace(/[^a-zA-Z]/g, "");
+                    const isHighlighted = highlightIndex === idx;
+                    return (
+                        <span
+                            key={idx}
+                            className={`cursor-pointer rounded px-1 ${
+                                isHighlighted
+                                    ? "bg-green-300"
+                                    : "hover:bg-yellow-200"
+                            } ${
+                                savingWord === cleanedWord
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
+                            }`}
+                            onClick={() => {
+                                if (cleanedWord && savingWord !== cleanedWord) {
+                                    saveWord(cleanedWord.toLowerCase());
+                                }
+                            }}
+                            title="Click to save this word"
+                        >
+                            {word}{" "}
+                        </span>
+                    );
+                })}
             </p>
         </div>
     );
