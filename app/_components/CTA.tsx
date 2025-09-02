@@ -1,7 +1,7 @@
-// app/_components/CTA.tsx
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function CallToActionSection() {
   return (
@@ -29,13 +29,15 @@ export default function CallToActionSection() {
           Join thousands of parents bringing personalized adventures to life.
         </motion.p>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-white text-pink-600 px-10 py-4 rounded-xl font-semibold shadow-lg hover:bg-gray-100 transition"
-        >
-          Get Started Now
-        </motion.button>
+        <Link href="/sign-up">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-white text-pink-600 px-10 py-4 rounded-xl font-semibold shadow-lg hover:bg-gray-100 transition"
+          >
+            Get Started Now
+          </motion.button>
+        </Link>
       </div>
     </section>
   );

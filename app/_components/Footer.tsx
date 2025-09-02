@@ -7,17 +7,29 @@ export default function Footer() {
   return (
     <footer className="py-10 bg-gradient-to-br from-[#EEDFFF] via-[#E4CAFF] to-[#DBB5FF] text-gray-800 text-center">
       <div className="max-w-6xl mx-auto px-6 text-center space-y-8">
-        
         {/* Logo */}
         <h2 className="text-3xl font-extrabold tracking-wide">KiddieGPT</h2>
 
         {/* Navigation Links  // needs required section ids to navigate */}
         <nav className="flex flex-wrap justify-center gap-6 text-lg font-medium text-purple-800">
-          <a href="#features" className="hover:text-purple-600 transition">Features</a>
-          <a href="#benefits" className="hover:text-purple-600 transition">Benefits</a>
-          <a href="./view-story" className="hover:text-purple-600 transition">Stories</a>
-          <a href="./buy-credits/page" className="hover:text-purple-600 transition">Pricing</a>
-          <a href="./contact/page" className="hover:text-purple-600 transition">Contact</a>
+          <Link href="#features" className="hover:text-purple-600 transition">
+            Features
+          </Link>
+          <Link href="#benefits" className="hover:text-purple-600 transition">
+            Benefits
+          </Link>
+          <Link href="/explore" className="hover:text-purple-600 transition">
+            Stories
+          </Link>
+          <Link
+            href="/buy-credits"
+            className="hover:text-purple-600 transition"
+          >
+            Pricing
+          </Link>
+          <Link href="/contact" className="hover:text-purple-600 transition">
+            Contact
+          </Link>
         </nav>
 
         {/* Social Icons */}
