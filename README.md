@@ -77,12 +77,12 @@ npm install
 3. Configure environment variables:
 
 ```bash
-DATABASE_URL=your_postgresql_url
+DATABASE_URL=your_postgres_url
 REPLICATE_API_TOKEN=your_replicate_api_key
 GEMINI_API_KEY=your_gemini_api_key
 CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
-NEXT_PUBLIC_CLERK_FRONTEND_API=your_clerk_frontend_api
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 PAYPAL_CLIENT_ID=your_paypal_client_id
 PAYPAL_CLIENT_SECRET=your_paypal_client_secret
 ```
