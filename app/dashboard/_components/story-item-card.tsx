@@ -32,10 +32,10 @@ const StoryItemCard = ({ story }: StoryItemType) => {
   return (
     <Card
       onClick={() => router.push(`/view-story/${story?.storyId}`)}
-      className="w-full max-w-sm h-[580px] flex flex-col rounded-xl overflow-hidden shadow-xl border border-purple-300 bg-gradient-to-r from-purple-200 to-purple-300 hover:shadow-purple-400 transition duration-300 group cursor-pointer"
+      className="w-full max-w-sm h-[500px] flex flex-col rounded-xl overflow-hidden shadow-xl border border-purple-300 bg-white hover:shadow-purple-400 transition duration-300 group cursor-pointer"
     >
       {/* Image */}
-      <div className="h-[240px] flex-shrink-0 overflow-hidden">
+      <div className="h-[200px] flex-shrink-0 overflow-hidden">
         <Image
           onClick={e => { e.stopPropagation(); router.push(`/view-story/${story?.storyId}`); }}
           src={story?.coverImage}
@@ -50,14 +50,14 @@ const StoryItemCard = ({ story }: StoryItemType) => {
       <CardContent className="flex flex-col flex-1 p-4 justify-between">
 
         {/* Title */}
-        <div className="h-[50px] mb-3 overflow-hidden">
+        <div className="h-[40px] mb-3 overflow-hidden">
           <CardTitle className="text-lg font-bold text-purple-800 line-clamp-2 leading-tight break-words">
             {story?.output?.title}
           </CardTitle>
         </div>
 
         {/* Author and Tags */}
-        <div className="h-[50px] mb-3">
+        <div className="h-[50px] mb-3 ">
           <p className="text-sm text-purple-700 font-medium line-clamp-1">
             By <span className="font-semibold">{story?.userName}</span>
           </p>
@@ -72,7 +72,7 @@ const StoryItemCard = ({ story }: StoryItemType) => {
         </div>
 
         {/* Description */}
-        <div className="h-[40px] mb-4">
+        <div className="h-[40px] mb-2">
           <p className="text-gray-700 text-sm line-clamp-2 leading-relaxed break-words">
             {story?.storySubject}
           </p>
@@ -82,7 +82,7 @@ const StoryItemCard = ({ story }: StoryItemType) => {
         <div className="mt-auto">
           <button
             onClick={e => { e.stopPropagation(); router.push(`/view-story/${story?.storyId}`); }}
-            className="w-full mb-2 px-4 py-3 bg-purple-700 text-white rounded-lg shadow-md hover:bg-purple-900 transition-all duration-200 text-sm font-semibold hover:shadow-lg transform hover:-translate-y-0.5"
+            className="w-full mb-2 px-4 py-3 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-800 transition-all duration-200 text-sm font-semibold hover:shadow-lg transform hover:-translate-y-0.5"
           >
             View Story
           </button>
