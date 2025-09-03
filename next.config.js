@@ -1,21 +1,24 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  images: {
-    domains: ['images.unsplash.com', 'cdn.pixabay.com'],
-  },
-  // Or use remotePatterns (recommended for newer Next.js versions):
+module.exports = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: 'firebasestorage.googleapis.com',
+        port: '',
+        pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'cdn.pixabay.com',
+        hostname: 'tenor.com',
+        port: '',
+        pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'replicate.delivery',
+        port: '',
+        pathname: '/**',
+      }
     ],
   },
-}
-
-module.exports = nextConfig
+};

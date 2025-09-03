@@ -1,33 +1,32 @@
-"use client"
+"use client";
 
-import {
-  Card,
-  CardContent,
-  CardTitle,
-} from "@/components/ui/card"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 type StoryItemType = {
   story: {
-    id: number,
-    storyType: string,
-    ageGroup: string,
-    coverImage: string,
-    imageStyle: string,
-    userEmail: string,
-    userName: string,
+    id: number;
+    storyType: string;
+    ageGroup: string;
+    coverImage: string;
+    imageStyle: string;
+    userEmail: string;
+    userName: string;
     output: {
-      title: string,
-      coverImage: string
-    },
-    storyId: string,
-    storySubject: string
-  }
-}
+      title: string;
+      coverImage: string;
+    };
+    storyId: string;
+    storySubject: string;
+  };
+};
 
 const StoryItemCard = ({ story }: StoryItemType) => {
-  const router = useRouter()
+  const router = useRouter();
+
+  const isValidImage =
+    typeof story?.coverImage === "string" && story.coverImage.trim() !== "";
 
   return (
     <Card
@@ -36,19 +35,23 @@ const StoryItemCard = ({ story }: StoryItemType) => {
     >
       {/* Image */}
       <div className="h-[240px] flex-shrink-0 overflow-hidden">
-        <Image
-          onClick={e => { e.stopPropagation(); router.push(`/view-story/${story?.storyId}`); }}
-          src={story?.coverImage}
-          alt={story?.output?.title || "Story Cover"}
-          width={400}
-          height={240}
-          className="w-full h-full object-cover p-2 rounded-2xl transition-transform duration-500 group-hover:scale-105"
-        />
+        {isValidImage && (
+          <Image
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/view-story/${story?.storyId}`);
+            }}
+            src={story.coverImage}
+            alt={story?.output?.title || "Story Cover"}
+            width={400}
+            height={240}
+            className="w-full h-full object-cover p-2 rounded-2xl transition-transform duration-500 group-hover:scale-105"
+          />
+        )}
       </div>
 
       {/* Content */}
       <CardContent className="flex flex-col flex-1 p-4 justify-between">
-
         {/* Title */}
         <div className="h-[50px] mb-3 overflow-hidden">
           <CardTitle className="text-lg font-bold text-purple-800 line-clamp-2 leading-tight break-words">
@@ -81,16 +84,18 @@ const StoryItemCard = ({ story }: StoryItemType) => {
         {/* Button */}
         <div className="mt-auto">
           <button
-            onClick={e => { e.stopPropagation(); router.push(`/view-story/${story?.storyId}`); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/view-story/${story?.storyId}`);
+            }}
             className="w-full mb-2 px-4 py-3 bg-purple-700 text-white rounded-lg shadow-md hover:bg-purple-900 transition-all duration-200 text-sm font-semibold hover:shadow-lg transform hover:-translate-y-0.5"
           >
             View Story
           </button>
         </div>
-
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default StoryItemCard
+export default StoryItemCard;
