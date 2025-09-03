@@ -5,11 +5,19 @@ import AgeGroup from "./_components/age-group";
 import ImageStyle from "./_components/image-style";
 import StorySubjectInput from "./_components/story-subject-input";
 import StoryType from "./_components/story-type";
-import { useContext, useEffect, useState } from "react";
+import CharacterCard from "./_components/character-card";
+import ConsistencyToggle from "./_components/consistency-toggle";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { generateKidsStoryAI } from "@/config/gemini-config";
 import { toast } from "react-toastify";
 import { db } from "@/config/db";
-import { StoryData, Users } from "@/config/schema";
+import {
+  StoryData,
+  Users,
+  Characters,
+  StoryCharacters,
+  PageGenerations,
+} from "@/config/schema";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import CustomLoader from "./_components/custom-loader";
@@ -17,6 +25,13 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { UserDetailContext } from "@/context/UserDetailContext";
 import { eq } from "drizzle-orm";
+import { CharacterData } from "./_components/character-card";
+import {
+  generateDeterministicSeed,
+  generateStyleToken,
+  buildCharacterPrompt,
+  buildNegativePrompt,
+} from "@/lib/utils";
 
 export interface fieldData {
   fieldName: string;
@@ -99,6 +114,19 @@ const CreateStory = () => {
     imageStyle: "",
   });
 
+  const [characterData, setCharacterData] = useState<CharacterData>({
+    name: "",
+    age: "",
+    traits: "",
+    outfit: "",
+    primaryColor: "",
+    mood: "",
+    backstory: "",
+    refImages: [],
+  });
+
+  const [enforceConsistency, setEnforceConsistency] = useState(true);
+
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
 
   const { user } = useUser();
@@ -108,17 +136,97 @@ const CreateStory = () => {
 
   //magicTip
   const [magicTip, setMagicTip] = useState<string>(magicalTips.morning[0]);
-
-  const onHandleUserSelection = (data: fieldData) => {
+  const onHandleUserSelection = useCallback((data: fieldData) => {
+    console.log("onHandleUserSelection called:", data);
     setFormData((prev) => ({
       ...prev,
       [data.fieldName]: data.fieldValue,
     }));
-  };
+  }, []);
+
+  const onCharacterChange = useCallback((character: CharacterData) => {
+    console.log("onCharacterChange called:", character);
+    setCharacterData(character);
+  }, []);
+
+  const onConsistencyChange = useCallback((enabled: boolean) => {
+    console.log("onConsistencyChange called:", enabled);
+    setEnforceConsistency(enabled);
+  }, []);
 
   useEffect(() => {
     console.log("Updated formData:", formData);
-  }, [formData]);
+    console.log("Updated characterData:", characterData);
+    console.log("Enforce consistency:", enforceConsistency);
+  }, [formData, characterData, enforceConsistency]);
+
+  const saveCharacterToDatabase = async (): Promise<number | null> => {
+    if (!characterData.name || !enforceConsistency) {
+      return null;
+    }
+
+    try {
+      const result = await db
+        .insert(Characters)
+        .values({
+          ownerId: user?.primaryEmailAddress?.emailAddress || "",
+          name: characterData.name,
+          descriptors: characterData,
+          primaryColor: characterData.primaryColor,
+          outfit: characterData.outfit,
+          refImages: characterData.refImages || [],
+        })
+        .returning({ id: Characters.id });
+
+      return result[0]?.id || null;
+    } catch (error) {
+      console.error("Error saving character:", error);
+      return null;
+    }
+  };
+
+  const saveStoryCharacterRelationship = async (
+    storyId: string,
+    characterId: number
+  ) => {
+    try {
+      const styleToken = generateStyleToken(characterData, formData.imageStyle);
+      const seed = generateDeterministicSeed(storyId, characterId, 0); // 0 for cover
+
+      await db.insert(StoryCharacters).values({
+        storyId,
+        characterId,
+        role: "main",
+        styleToken,
+        seed,
+      });
+    } catch (error) {
+      console.error("Error saving story character relationship:", error);
+    }
+  };
+
+  const savePageGeneration = async (
+    storyId: string,
+    pageIndex: number,
+    imageUrl: string,
+    seed: string,
+    negativePrompt: string,
+    characterPromptCtx: any
+  ) => {
+    try {
+      await db.insert(PageGenerations).values({
+        storyId,
+        pageIndex,
+        imageUrl,
+        seed,
+        negativePrompt,
+        characterPromptCtx,
+        style: formData.imageStyle,
+      });
+    } catch (error) {
+      console.error("Error saving page generation:", error);
+    }
+  };
 
   // New: Update magicTip every 2 seconds
   useEffect(() => {
@@ -162,6 +270,14 @@ const CreateStory = () => {
         })
         .returning({ storyId: StoryData.storyId });
 
+      // Save character if consistency is enabled
+      if (enforceConsistency && characterData.name) {
+        const characterId = await saveCharacterToDatabase();
+        if (characterId) {
+          await saveStoryCharacterRelationship(recordId, characterId);
+        }
+      }
+
       setLoading(false);
       return result;
     } catch (error) {
@@ -188,12 +304,32 @@ const CreateStory = () => {
       return;
     }
 
+    if (enforceConsistency && !characterData.name) {
+      toast.error(
+        "Please provide a character name when consistency is enabled"
+      );
+      return;
+    }
+
     setLoading(true);
 
     const CREATE_STORY_PROMPT = `
 Create a 5-chapter kids story for children aged {ageGroup}.
 The story should be {storyType}.
 The main character is a {storySubject}.
+${
+  enforceConsistency && characterData.name
+    ? `The main character is named ${characterData.name}${
+        characterData.age ? `, who is ${characterData.age} years old` : ""
+      }${characterData.traits ? `, and is ${characterData.traits}` : ""}${
+        characterData.outfit ? `, wearing ${characterData.outfit}` : ""
+      }${
+        characterData.primaryColor
+          ? `, with ${characterData.primaryColor} as their primary color`
+          : ""
+      }.`
+    : ""
+}
 The language should be simple and child-friendly.
 
 Include:
@@ -216,10 +352,22 @@ Format everything in clean JSON with keys: title, coverImage, chapters.`;
       const story = await generateKidsStoryAI(FINAL_PROMPT);
       const parsedStory = typeof story === "string" ? JSON.parse(story) : story;
 
-      const imagePrompt = `${parsedStory.coverImage} in ${formData.imageStyle} style. Text: "${parsedStory.title}" in bold, centered at the top like a storybook cover. Clean background, well-lit, high-quality illustration.`;
+      let imagePrompt = `${parsedStory.coverImage} in ${formData.imageStyle} style. Text: "${parsedStory.title}" in bold, centered at the top like a storybook cover. Clean background, well-lit, high-quality illustration.`;
+
+      // Add character consistency to image prompt if enabled
+      if (enforceConsistency && characterData.name) {
+        const characterPrompt = buildCharacterPrompt(
+          characterData,
+          formData.imageStyle,
+          true
+        );
+        imagePrompt = `${characterPrompt}, ${imagePrompt}`;
+      }
 
       const imageResp = await axios.post("/api/generate-image", {
         prompt: imagePrompt,
+        enforceConsistency: enforceConsistency,
+        characterData: enforceConsistency ? characterData : null,
       });
 
       if (!imageResp.data.success || !imageResp.data.imageUrl) {
@@ -242,6 +390,37 @@ Format everything in clean JSON with keys: title, coverImage, chapters.`;
         JSON.stringify(parsedStory),
         firebaseStorageImageurl
       );
+
+      // Save character if consistency is enabled
+      if (enforceConsistency && characterData.name) {
+        const characterId = await saveCharacterToDatabase();
+        if (characterId) {
+          await saveStoryCharacterRelationship(
+            result[0]?.storyId || "",
+            characterId
+          );
+        }
+      }
+
+      // Save page generation metadata if consistency is enabled
+      if (enforceConsistency && characterData.name) {
+        const seed = generateDeterministicSeed(result[0]?.storyId || "", 1, 0); // characterId 1 for now
+        const negativePrompt = buildNegativePrompt(characterData);
+        const characterPromptCtx = {
+          name: characterData.name,
+          descriptors: characterData,
+          style: formData.imageStyle,
+        };
+
+        await savePageGeneration(
+          result[0]?.storyId || "",
+          0,
+          firebaseStorageImageurl,
+          seed,
+          negativePrompt,
+          characterPromptCtx
+        );
+      }
 
       toast.success("🦄 Story Generated Successfully!", {
         position: "top-right",
@@ -288,6 +467,22 @@ Format everything in clean JSON with keys: title, coverImage, chapters.`;
           <StoryType userSelection={onHandleUserSelection} />
           <AgeGroup userSelection={onHandleUserSelection} />
           <ImageStyle userSelection={onHandleUserSelection} />
+        </div>
+
+        {/* Character Consistency Section */}
+        <div className="mt-10 space-y-6">
+          <h3 className="text-2xl font-bold text-purple-800">
+            🎭 Character Consistency
+          </h3>
+          <p className="text-purple-600 text-lg">
+            Define your main character to maintain consistent appearance across
+            all story pages
+          </p>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <CharacterCard onCharacterChange={onCharacterChange} />
+            <ConsistencyToggle onConsistencyChange={onConsistencyChange} />
+          </div>
         </div>
 
         <div className="flex flex-col items-center mt-10 gap-3">
