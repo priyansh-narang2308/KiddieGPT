@@ -10,12 +10,30 @@ export default function Footer() {
         {/* Logo */}
         <h2 className="text-3xl font-extrabold tracking-wide">KiddieGPT</h2>
 
-        {/* Navigation Links  // needs required section ids to navigate */}
+        {/* Navigation Links */}
         <nav className="flex flex-wrap justify-center gap-6 text-lg font-medium text-purple-800">
-          <Link href="#features" className="hover:text-purple-600 transition">
+          <Link
+            href="#features"
+            className="hover:text-purple-600 transition"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("features")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
             Features
           </Link>
-          <Link href="#benefits" className="hover:text-purple-600 transition">
+          <Link
+            href="#benefits"
+            className="hover:text-purple-600 transition"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("benefits")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
             Benefits
           </Link>
           <Link href="/explore" className="hover:text-purple-600 transition">
