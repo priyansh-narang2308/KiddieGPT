@@ -7,28 +7,40 @@ const StoryPages = ({ storyChapters }: any) => {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [speechRate, setSpeechRate] = useState(1);
-    const [savingWord, setSavingWord] = useState<string | null>(null); // safeguard
-    const [highlightIndex, setHighlightIndex] = useState<number | null>(null); // highlight spoken word
+    const [voiceStyle, setVoiceStyle] = useState("soft-female"); // NEW: voice style
+    const [savingWord, setSavingWord] = useState<string | null>(null);
+    const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
     const { userDetail } = useContext(UserDetailContext);
 
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-    const playSpeech = (text: string, rate: number = speechRate) => {
+    // NEW: Voice settings function
+    const getVoiceSettings = (style: string) => {
+        switch (style) {
+            case "soft-female":
+                return { pitch: 1.05, rate: 0.95, volume: 1.0 };
+            case "gentle-male":
+                return { pitch: 0.9, rate: 0.95, volume: 0.95 };
+            case "childlike":
+                return { pitch: 1.4, rate: 1.1, volume: 0.95 };
+            default:
+                return { pitch: 1.0, rate: 1.0, volume: 1.0 };
+        }
+    };
+
+    const playSpeech = (text: string, rateOverride?: number) => {
         if (!text) return;
 
         const synth = window.speechSynthesis;
-
-        if (synth.speaking) {
-            synth.cancel();
-        }
+        if (synth.speaking) synth.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
+        const settings = getVoiceSettings(voiceStyle);
 
-        utterance.rate = rate;
-        utterance.pitch = 1;
-        utterance.volume = 1;
+        utterance.pitch = settings.pitch;
+        utterance.rate = rateOverride ?? settings.rate;
+        utterance.volume = settings.volume;
 
-        // Highlight word as it is spoken
         utterance.onboundary = (event) => {
             if (event.name === "word" || event.charIndex !== undefined) {
                 const spokenTextUpToNow = text.slice(0, event.charIndex);
@@ -44,7 +56,7 @@ const StoryPages = ({ storyChapters }: any) => {
         utterance.onend = () => {
             setIsSpeaking(false);
             setIsPaused(false);
-            setHighlightIndex(null); // clear highlight after finishing
+            setHighlightIndex(null);
         };
         utterance.onerror = () => {
             setIsSpeaking(false);
@@ -60,10 +72,8 @@ const StoryPages = ({ storyChapters }: any) => {
         const synth = window.speechSynthesis;
 
         if (!isSpeaking) {
-            // Start speech
             playSpeech(storyChapters?.chapterText, speechRate);
         } else if (isPaused) {
-            // ✅ Robust resume hack (works in Chrome)
             const resumeInterval = setInterval(() => {
                 if (!synth.paused) {
                     clearInterval(resumeInterval);
@@ -72,10 +82,9 @@ const StoryPages = ({ storyChapters }: any) => {
                 synth.resume();
             }, 50);
 
-            setTimeout(() => clearInterval(resumeInterval), 1000); // stop loop after 1s
+            setTimeout(() => clearInterval(resumeInterval), 1000);
             setIsPaused(false);
         } else {
-            // Pause
             synth.pause();
             setIsPaused(true);
         }
@@ -91,7 +100,7 @@ const StoryPages = ({ storyChapters }: any) => {
     const saveWord = async (word: string) => {
         if (!word.trim() || !userDetail?.id || savingWord) return;
 
-        setSavingWord(word); // lock this word
+        setSavingWord(word);
         const note = prompt(`Add a note for "${word}" (optional):`) || null;
 
         try {
@@ -111,7 +120,7 @@ const StoryPages = ({ storyChapters }: any) => {
             console.error(error);
             alert("Failed to save word.");
         } finally {
-            setSavingWord(null); // unlock
+            setSavingWord(null);
         }
     };
 
@@ -155,6 +164,7 @@ const StoryPages = ({ storyChapters }: any) => {
                     </button>
                 )}
 
+                {/* Speech rate selector */}
                 <select
                     className="ml-3 border border-gray-300 rounded px-2 py-1 text-sm"
                     value={speechRate}
@@ -173,6 +183,24 @@ const StoryPages = ({ storyChapters }: any) => {
                     <option value={0.5}>0.5x</option>
                     <option value={0.75}>0.75x</option>
                     <option value={1}>1x</option>
+                </select>
+
+                {/* Voice style selector */}
+                <select
+                    className="ml-3 border border-gray-300 rounded px-2 py-1 text-sm"
+                    value={voiceStyle}
+                    onChange={(e) => {
+                        setVoiceStyle(e.target.value);
+                        if (isSpeaking) {
+                            window.speechSynthesis.cancel();
+                            playSpeech(storyChapters?.chapterText, speechRate);
+                        }
+                    }}
+                    title="Select voice style"
+                >
+                    <option value="soft-female">Soft Female</option>
+                    <option value="gentle-male">Gentle Male</option>
+                    <option value="childlike">Childlike</option>
                 </select>
             </h2>
 
